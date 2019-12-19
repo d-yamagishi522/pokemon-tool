@@ -22,6 +22,7 @@
               @setName="setPokemon1"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon1 = pokemon1.slice(0, -1)"
             />
           </th>
           <th class="border border-black w-40">
@@ -32,6 +33,7 @@
               @setName="setPokemon2"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon2 = pokemon2.slice(0, -1)"
             />
           </th>
           <th class="border border-black w-40">
@@ -42,6 +44,7 @@
               @setName="setPokemon3"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon3 = pokemon3.slice(0, -1)"
             />
           </th>
           <th class="border border-black w-40">
@@ -52,6 +55,7 @@
               @setName="setPokemon4"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon4 = pokemon4.slice(0, -1)"
             />
           </th>
           <th class="border border-black w-40">
@@ -62,6 +66,7 @@
               @setName="setPokemon5"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon5 = pokemon5.slice(0, -1)"
             />
           </th>
           <th class="border border-black w-40">
@@ -72,6 +77,7 @@
               @setName="setPokemon6"
               @tab="moveNext"
               @shift="movePrev"
+              @Backspace="pokemon6 = pokemon6.slice(0, -1)"
             />
           </th>
           <th class="border border-black">合計</th>

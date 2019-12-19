@@ -13,6 +13,7 @@
         @keydown.prevent.shift.exact="$emit('shift', $event), (suggest = false)"
         @keydown.prevent.right.exact="$emit('tab', $event), (suggest = false)"
         @keydown.prevent.left.exact="$emit('shift', $event), (suggest = false)"
+        @keydown.prevent.backspace.exact="$emit('Backspace')"
         :value="value"
         placeholder="ポケモンを入力"
         class="outline-none input-item"
