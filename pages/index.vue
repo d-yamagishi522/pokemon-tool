@@ -1,56 +1,83 @@
 <template>
   <div class="p-2">
-    <button @click="updateTable()">確定</button>
-    <table>
+    <button
+      @click="updateTable()"
+      @keydown.prevent.shift.exact="movePrev($event)"
+      @keydown.prevent.left.exact="movePrev($event)"
+      @keydown.prevent.right.exact="moveNext($event)"
+      @keydown.prevent.tab.exact="moveNext($event)"
+      class="input-item"
+    >
+      確定
+    </button>
+    <table class="table">
       <thead>
         <tr>
-          <th class="border border-black"></th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40"></th>
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon1"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon1"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon1 = pokemon1.slice(0, -1)"
             />
           </th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon2"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon2"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon2 = pokemon2.slice(0, -1)"
             />
           </th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon3"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon3"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon3 = pokemon3.slice(0, -1)"
             />
           </th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon4"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon4"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon4 = pokemon4.slice(0, -1)"
             />
           </th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon5"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon5"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon5 = pokemon5.slice(0, -1)"
             />
           </th>
-          <th class="border border-black">
-            <input
+          <th class="border border-black w-40">
+            <SuggestInput
+              :list="suggestList"
               v-model="pokemon6"
-              type="text"
-              placeholder="pokemon"
-              class="outline-none"
+              @input="filterList"
+              @setName="setPokemon6"
+              @tab="moveNext"
+              @shift="movePrev"
+              @Backspace="pokemon6 = pokemon6.slice(0, -1)"
             />
           </th>
           <th class="border border-black">合計</th>
@@ -60,6 +87,11 @@
         <tr
           v-for="pokemon in pokemonList"
           :key="pokemon.id"
+          :class="{
+            'bg-red-200': total(pokemon) === 0,
+            'bg-yellow-200': total(pokemon) === 1,
+            'bg-teal-300': total(pokemon) >= 2
+          }"
           class="border border-black"
         >
           <td class="border border-black">{{ pokemon.name }}</td>
@@ -69,20 +101,20 @@
           <td class="border border-black">{{ compatibility4(pokemon) }}</td>
           <td class="border border-black">{{ compatibility5(pokemon) }}</td>
           <td class="border border-black">{{ compatibility6(pokemon) }}</td>
+          <td class="border border-black">{{ total(pokemon) }}</td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <td>フッタセル1</td>
-          <td>フッタセル2</td>
-        </tr>
-      </tfoot>
     </table>
   </div>
 </template>
 
 <script>
+import SuggestInput from '@/components/SuggestInput.vue'
+
 export default {
+  components: {
+    SuggestInput
+  },
   data() {
     return {
       pokemon1: '',
@@ -155,16 +187,12 @@ export default {
           weaks: ['かくとう', 'ひこう', 'フェアリー']
         }
       ],
-      list: [
-        {
-          id: 1,
-          name: 'test'
-        },
-        {
-          id: 2,
-          name: 'sample'
-        }
-      ]
+      suggestList: []
+    }
+  },
+  computed: {
+    elements() {
+      return document.getElementsByClassName('input-item')
     }
   },
   async created() {
@@ -179,6 +207,17 @@ export default {
       this.p4 = this.pokemon4
       this.p5 = this.pokemon5
       this.p6 = this.pokemon6
+    },
+    total(pokemon) {
+      if (this.p1 === '') return ''
+      let num = 0
+      if (this.compatibility1(pokemon) === '○') num++
+      if (this.compatibility2(pokemon) === '○') num++
+      if (this.compatibility3(pokemon) === '○') num++
+      if (this.compatibility4(pokemon) === '○') num++
+      if (this.compatibility5(pokemon) === '○') num++
+      if (this.compatibility6(pokemon) === '○') num++
+      return num
     },
     compatibility1(pokemon) {
       return this.baseCompatibility(pokemon, this.p1)
@@ -245,7 +284,68 @@ export default {
       } else {
         return '-'
       }
+    },
+    filterList(text) {
+      this.suggestList = this.pokemonList.filter((item) => {
+        return this.katakanaToHiragana(item.name).includes(
+          this.katakanaToHiragana(text)
+        )
+      })
+    },
+    katakanaToHiragana(text) {
+      return text.replace(/[\u30A1-\u30F6]/g, (match) => {
+        const character = match.charCodeAt(0) - 0x60
+        return String.fromCharCode(character)
+      })
+    },
+    setPokemon1(name) {
+      this.pokemon1 = name
+    },
+    setPokemon2(name) {
+      this.pokemon2 = name
+    },
+    setPokemon3(name) {
+      this.pokemon3 = name
+    },
+    setPokemon4(name) {
+      this.pokemon4 = name
+    },
+    setPokemon5(name) {
+      this.pokemon5 = name
+    },
+    setPokemon6(name) {
+      this.pokemon6 = name
+    },
+    findIndex(target) {
+      return [].findIndex.call(this.elements, (e) => e === target)
+    },
+    moveFocus(index) {
+      if (this.elements[index]) {
+        this.elements[index].focus()
+      }
+    },
+    moveNext(event) {
+      const index = this.findIndex(event.target)
+      if (index === 6) {
+        this.moveFocus(0)
+        return
+      }
+      this.moveFocus(index + 1)
+    },
+    movePrev(event) {
+      const index = this.findIndex(event.target)
+      if (index === 0) {
+        this.moveFocus(6)
+        return
+      }
+      this.moveFocus(index - 1)
     }
   }
 }
 </script>
+
+<style scoped>
+.table {
+  width: 1250px;
+}
+</style>
