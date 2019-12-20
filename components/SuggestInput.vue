@@ -9,10 +9,9 @@
       <input
         @focus="$emit('input', $event.target.value), (suggest = true)"
         @input="$emit('input', $event.target.value)"
-        @keydown.prevent.tab.exact="$emit('tab', $event), (suggest = false)"
-        @keydown.prevent.shift.exact="$emit('shift', $event), (suggest = false)"
-        @keydown.prevent.right.exact="$emit('tab', $event), (suggest = false)"
-        @keydown.prevent.left.exact="$emit('shift', $event), (suggest = false)"
+        @keydown.prevent.tab.exact="$emit('right', $event), (suggest = false)"
+        @keydown.prevent.right.exact="$emit('right', $event), (suggest = false)"
+        @keydown.prevent.left.exact="$emit('left', $event), (suggest = false)"
         @keydown.prevent.backspace.exact="$emit('Backspace')"
         :value="value"
         placeholder="ポケモンを入力"
